@@ -1,0 +1,59 @@
+<script type="text/javascript">
+  RED.nodes.registerType('faceapi-node',{
+    category: 'face api',
+    color: '#a6bbcf',
+    defaults: {
+      name: {value:""}
+    },
+    credentials: {
+      key: {
+        type: "password"
+      },
+      server: {
+        type: "text"
+      },
+      groupid:  {
+        type: "text"
+      },
+      groupdata:  {
+        type: "text"
+      }
+    },
+    inputs:1,
+    outputs:1,
+    icon: "function.png",
+    label: function() {
+      return this.name||"faceapi-node";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="faceapi-node">
+  <div class="form-row">
+      <label for="node-input-key"><i class="icon-tag"></i> Sub Key</label>
+      <input type="password" id="node-input-key" placeholder="Sub Key">
+  </div>
+  <div class="form-row">
+      <label for="node-input-server"><i class="icon-tag"></i> API Server</label>
+      <input type="text" id="node-input-server" placeholder="API Server">
+  </div>
+  <hr />
+  <div class="form-row">
+      <label for="node-input-groupid"><i class="icon-tag"></i> Group ID</label>
+      <input type="text" id="node-input-groupid" placeholder="Group ID">
+  </div>
+  <div class="form-row">
+      <label for="node-input-groupdata"><i class="icon-tag"></i> Group Data</label>
+      <input type="text" id="node-input-groupdata" placeholder="Group Data">
+  </div>
+  <hr />
+  <div class="form-row">
+      <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="faceapi-node">
+  <h2>Microsoft Cognitive Services Face API node</h2>
+  <p>A simple node that allow you to manage a face cognitive service.</p>
+</script>
