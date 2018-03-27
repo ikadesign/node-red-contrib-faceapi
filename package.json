@@ -1,5 +1,5 @@
 {
-  "name": "node-red-contrib-faceapi-node",
+  "name": "node-red-contrib-faceapi",
   "version": "0.0.1",
   "description": "Microsoft FaceAPI node",
   "main": "faceapi-node.js",
@@ -19,6 +19,6 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/ikadesign/node-red-contrib-faceapi-node.git"
+    "url": "git+https://github.com/ikadesign/node-red-contrib-faceapi.git"
   }
 }
