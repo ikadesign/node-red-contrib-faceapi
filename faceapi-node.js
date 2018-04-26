@@ -6,9 +6,9 @@ module.exports = function(RED) {
       RED.nodes.createNode(this,config);
       var node = this;
       node.on('input', function(msg) {
-        var subKey = this.credentials.key || 'no-key';  // 30231abb20384452b6c40f8707728a99
-        var subServer = this.credentials.server || 'no-server';  // westcentralus.api.cognitive.microsoft.com
-        var groupID = this.credentials.groupid || 'no-id';  // ikayaki
+        var subKey = this.credentials.key || 'no-key';
+        var subServer = this.credentials.server || 'no-server';
+        var groupID = this.credentials.groupid || 'no-id';
         var groupData = this.credentials.groupdata || 'no Description';
         var apiKind = msg.req.originalUrl.split('/')[2];
 
@@ -311,7 +311,7 @@ module.exports = function(RED) {
         }
 
         let detectedFaceId = msg.FaceIds;
-        // 316182cd-99ca-48b7-a91e-1f4e2caec944
+        
         let detectUrl = msg.detecturl;
 
         const Detect = () => {

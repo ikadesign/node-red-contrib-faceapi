@@ -8,6 +8,10 @@
   },
   "author": "ika",
   "license": "Apache-2.0",
+  "keyword": [
+    "node-red",
+    "faceapi"
+  ],
   "node-red": {
     "nodes": {
       "faceapi-node": "faceapi-node.js"
