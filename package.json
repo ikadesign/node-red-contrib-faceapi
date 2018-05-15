@@ -1,20 +1,20 @@
 {
   "name": "node-red-contrib-faceapi",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Microsoft FaceAPI node",
-  "main": "faceapi-node.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "author": "ika",
   "license": "Apache-2.0",
+  "main": "faceapi-node.js",
   "keyword": [
     "node-red",
     "faceapi"
   ],
   "node-red": {
     "nodes": {
-      "faceapi-node": "faceapi-node.js"
+      "faceapi-broker": "faceapi-node.js",
+      "faceapi-create": "faceapi-node.js",
+      "faceapi-train": "faceapinode.js",
+      "faceapi-identify": "faceapi-idnode.js"
     }
   },
   "dependencies": {
