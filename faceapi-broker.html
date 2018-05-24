@@ -1,0 +1,99 @@
+<!--
+  Copyright JS Foundation and other contributors, http://js.foundation
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<!-- faceapi broker -->
+<script type="text/x-red" data-template-name="faceapi-broker">
+  <div class="form-row">
+      <label for="node-config-input-subkey">
+        <i class="fa fa-key"></i> 
+        Sub Key
+      </label>
+      <input type="text" id="node-config-input-subkey">
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-server">
+        <i class="fa fa-globe"></i> 
+        Server
+      </label>
+      <input type="text" id="node-config-input-server">
+  </div>
+  <hr />
+  <div class="form-row">
+      <label for="node-config-input-groupid">
+        <i class="fa fa-users"></i> 
+        Group ID
+      </label>
+      <input type="text" id="node-config-input-groupid">
+  </div>
+  <div class="form-row">
+      <label for="node-config-input-groupinfo">
+        <i class="fa fa-id-card-o"></i> 
+        Group info
+      </label>
+      <input type="text" id="node-config-input-groupinfo">
+  </div>
+  <hr />
+  <div class="form-row">
+      <label for="node-config-input-name"><i class="icon-tag"></i> Name</label>
+      <input type="text" id="node-config-input-name" placeholder="Name">
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="faceapi-broker">
+  <h2>broker</h2>
+  <p>notes</p>
+</script>
+
+<script type="text/javascript">
+  RED.nodes.registerType('faceapi-broker', {
+    category: 'config',
+    defaults: {
+      name: {
+        value: ""
+      },
+      broker: {
+        type: "",
+        required: true
+      },
+      subkey: {
+        type: "text"
+      },
+      server: {
+        type: "text"
+      },
+      groupid:  {
+        type: "text"
+      },
+      groupinfo:  {
+        type: "text"
+      }
+    },
+    credentials: {
+      subkey: {
+        type: "text"
+      },
+      server: {
+        type: "text"
+      },
+      groupid:  {
+        type: "text"
+      },
+      groupinfo:  {
+        type: "text"
+      }
+    },
+    label: function() {
+      return this.name || "faceapi-broker";
+    }
+  });
+</script>
