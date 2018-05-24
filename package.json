@@ -11,10 +11,10 @@
   ],
   "node-red": {
     "nodes": {
-      "faceapi-broker": "faceapi-node.js",
-      "faceapi-create": "faceapi-node.js",
-      "faceapi-train": "faceapinode.js",
-      "faceapi-identify": "faceapi-idnode.js"
+      "faceapi-identify": "faceapi-identify.js",
+      "faceapi-broker": "faceapi-broker.js",
+      "faceapi-create": "faceapi-create.js",
+      "faceapi-train": "faceapi-train.js"
     }
   },
   "dependencies": {
