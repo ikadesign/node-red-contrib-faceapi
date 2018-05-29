@@ -2,7 +2,7 @@ module.exports = function(RED) {
   "user strict";
   var request = require('request');
   var rp = require('request-promise');
-
+  var fs = require('fs');
   // create
   function FaceApiCreate(config) {
     RED.nodes.createNode(this, config);
@@ -42,7 +42,7 @@ module.exports = function(RED) {
             var apiPersonId;
             var getPersonId;
             var apiImage = imageBuffer;
-            var apiContentType = 'application/json';
+            var apiContentType = 'url';
 
             if ( Buffer.isBuffer(msg.payload) ) {
               // file mode
@@ -148,58 +148,98 @@ module.exports = function(RED) {
 
                     // get person id
                     getPersonId = response.personId;
+                    if (apiContentType == 'file') {
+                      // add person face option: FILE
+                      console.log('test', msg.filename)
+                      var personAddFaceOptions = {
+                        uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces' ),
+                        method: 'POST',
+                        formData: {
+                          file: fs.createReadStream(msg.filename)
+                        },
+                        headers: {
+                          'Content-Type': 'application/octet-stream',
+                          'Ocp-Apim-Subscription-Key': apiSubkey
+                        }
+                      };
 
-                    // add person face option: URL
-                    var personAddFaceOptions = {
-                      uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces'),
-                      method: 'POST',
-                      json: true,
-                      headers: {
-                        'Content-Type': apiContentType,
-                        'Ocp-Apim-Subscription-Key': apiSubkey
-                      },
-                      body: {
-                        url: apiImage
-                      }
-                    };
-                    
-                    // if file mode then modify option to binary mode
-                    if ( apiContentType == 'application/octet-stream' ) {
-                      personAddFaceOptions.encoding = null;
-                      personAddFaceOptions.body = apiImage;
-                      console.log(personAddFaceOptions);
+                      rp(personAddFaceOptions)
+                        .then(response => {
+                          console.log('person face added', response);
+                          // console.log('uri =', personAddFaceOptions.uri)
+
+                          // get people info
+                          var personDataOptions = {
+                            uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId),
+                            method: 'GET',
+                            json: true,
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Ocp-Apim-Subscription-Key': apiSubkey
+                            }
+                          };
+                          rp(personDataOptions)
+                            .then(response => {
+                              console.log('get people info', response)
+                              msg.personInfo = response;
+                              node.send(msg);
+                            })
+                            .catch(err => {
+                              msg.error = err;
+                              node.send(msg);
+                            })
+                        })
+                        .catch(err => {
+                          msg.erro = ('add person face ' + err);
+                          node.send(msg);
+                        })
+                    } else {
+                      
+                      // add person face option: URL
+                      var personAddFaceOptions = {
+                        uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces'),
+                        method: 'POST',
+                        json: true,
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Ocp-Apim-Subscription-Key': apiSubkey
+                        },
+                        body: {
+                          url: apiImage
+                        }
+                      };
+                      
+                      rp(personAddFaceOptions)
+                        .then(response => {
+                          console.log('person face added', response);
+                          // console.log('uri =', personAddFaceOptions.uri)
+
+                          // get people info
+                          var personDataOptions = {
+                            uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId),
+                            method: 'GET',
+                            json: true,
+                            headers: {
+                              'Content-Type': 'application/json',
+                              'Ocp-Apim-Subscription-Key': apiSubkey
+                            }
+                          };
+                          rp(personDataOptions)
+                            .then(response => {
+                              console.log('get people info', response)
+                              msg.personInfo = response;
+                              node.send(msg);
+                            })
+                            .catch(err => {
+                              msg.error = err;
+                              node.send(msg);
+                            })
+                        })
+                        .catch(err => {
+                          msg.erro = ('add person face ' + err);
+                          node.send(msg);
+                        })
                     }
-
-                    rp(personAddFaceOptions)
-                      .then(response => {
-                        console.log('person face added', response);
-                        // console.log('uri =', personAddFaceOptions.uri)
-
-                        // get people info
-                        var personDataOptions = {
-                          uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId),
-                          method: 'GET',
-                          json: true,
-                          headers: {
-                            'Content-Type': 'application/json',
-                            'Ocp-Apim-Subscription-Key': apiSubkey
-                          }
-                        };
-                        rp(personDataOptions)
-                          .then(response => {
-                            console.log('get people info', response)
-                            msg.personInfo = response;
-                            node.send(msg);
-                          })
-                          .catch(err => {
-                            msg.error = err;
-                            node.send(msg);
-                          })
-                      })
-                      .catch(err => {
-                        msg.erro = ('add person face ' + err);
-                        node.send(msg);
-                      })
                   })
                   .catch(err => {
                       msg.error = ('add person ' + err);
@@ -237,30 +277,26 @@ module.exports = function(RED) {
 
                         // image mode check
                         if ( apiContentType == 'file' ) {
-                          // add person face option file
-                          console.log('yo', msg.filename)
+                          
+                          // add person face option: FILE
+                          console.log('test', msg.filename)
                           var personAddFaceOptions = {
                             uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces' ),
                             method: 'POST',
-
-                            // 2018-05-22 fs is not defined...
-                            // need to find new way to upload binary
-
                             formData: {
-                              file: {
-                                value: fs.createReadStream(msg.filename)
-                              }
+                              file: fs.createReadStream(msg.filename)
                             },
                             headers: {
-                              // 'Content-Type': 'application/octet-stream',
+                              'Content-Type': 'application/octet-stream',
                               'Ocp-Apim-Subscription-Key': apiSubkey
                             }
                           };
 
                           rp(personAddFaceOptions)
                             .then(response => {
-                              console.log('face added 2 - file', response);
-  
+                              console.log('person face added', response);
+                              // console.log('uri =', personAddFaceOptions.uri)
+
                               // get people info
                               var personDataOptions = {
                                 uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId),
@@ -273,20 +309,19 @@ module.exports = function(RED) {
                               };
                               rp(personDataOptions)
                                 .then(response => {
-                                  console.log('get people info 2 - file', response)
+                                  console.log('get people info', response)
                                   msg.personInfo = response;
                                   node.send(msg);
                                 })
                                 .catch(err => {
-                                  msg.error = ('person get 2 - file' + err);
+                                  msg.error = err;
                                   node.send(msg);
                                 })
                             })
                             .catch(err => {
-                              msg.error = ('add face 2 - file' + err);
+                              msg.erro = ('add person face ' + err);
                               node.send(msg);
                             })
-
                         } else {
                           // add person face option url
                           var personAddFaceOptions = {
