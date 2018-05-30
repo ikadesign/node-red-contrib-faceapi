@@ -148,17 +148,15 @@ module.exports = function(RED) {
 
                     // get person id
                     getPersonId = response.personId;
+                    
                     if (apiContentType == 'file') {
                       // add person face option: FILE
-                      console.log('test', msg.filename)
                       var personAddFaceOptions = {
                         uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces' ),
                         method: 'POST',
-                        formData: {
-                          file: fs.createReadStream(msg.filename)
-                        },
+                        body: msg.payload,
                         headers: {
-                          'Content-Type': 'application/octet-stream',
+                          'Content-Type': 'application/octet-stream', 
                           'Ocp-Apim-Subscription-Key': apiSubkey
                         }
                       };
@@ -190,7 +188,7 @@ module.exports = function(RED) {
                             })
                         })
                         .catch(err => {
-                          msg.erro = ('add person face ' + err);
+                          msg.erro = ('add person face 1 FILE' + err);
                           node.send(msg);
                         })
                     } else {
@@ -236,7 +234,7 @@ module.exports = function(RED) {
                             })
                         })
                         .catch(err => {
-                          msg.erro = ('add person face ' + err);
+                          msg.erro = ('add person face 1 URL' + err);
                           node.send(msg);
                         })
                     }
@@ -279,15 +277,12 @@ module.exports = function(RED) {
                         if ( apiContentType == 'file' ) {
                           
                           // add person face option: FILE
-                          console.log('test', msg.filename)
                           var personAddFaceOptions = {
                             uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + getPersonId + '/persistedFaces' ),
                             method: 'POST',
-                            formData: {
-                              file: fs.createReadStream(msg.filename)
-                            },
+                            body: msg.payload,
                             headers: {
-                              'Content-Type': 'application/octet-stream',
+                              'Content-Type': 'application/octet-stream', 
                               'Ocp-Apim-Subscription-Key': apiSubkey
                             }
                           };
@@ -295,7 +290,6 @@ module.exports = function(RED) {
                           rp(personAddFaceOptions)
                             .then(response => {
                               console.log('person face added', response);
-                              // console.log('uri =', personAddFaceOptions.uri)
 
                               // get people info
                               var personDataOptions = {
@@ -319,7 +313,7 @@ module.exports = function(RED) {
                                 })
                             })
                             .catch(err => {
-                              msg.erro = ('add person face ' + err);
+                              msg.erro = ('add person face 2 FILE ' + err);
                               node.send(msg);
                             })
                         } else {

@@ -35,22 +35,37 @@ module.exports = function(RED) {
           // file mode pause
           if (Buffer.isBuffer(msg.payload)) {
             // file mode
-            apiContentType = "application/octet-stream";
+            apiContentType = "file";
           }
 
-          // detect option
-          var faceDetectOption = {
-            uri: "https://" + apiServer + "/face/v1.0/detect?returnFaceId=true",
-            method: "POST",
-            json: true,
-            headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": apiSubkey
-            },
-            body: {
-              url: apiImage
-            }
-          };
+          var faceDetectOption;
+          // file mode detect
+          if ( apiContentType == 'file') {
+            // detect option file
+            faceDetectOption = {
+              uri: "https://" + apiServer + "/face/v1.0/detect?returnFaceId=true",
+              method: "POST",
+              body: apiImage,
+              headers: {
+                "Content-Type": "application/octet-stream",
+                "Ocp-Apim-Subscription-Key": apiSubkey
+              }
+            };
+          } else {
+            // detect option url
+            faceDetectOption = {
+              uri: "https://" + apiServer + "/face/v1.0/detect?returnFaceId=true",
+              method: "POST",
+              json: true,
+              headers: {
+                "Content-Type": "application/json",
+                "Ocp-Apim-Subscription-Key": apiSubkey
+              },
+              body: {
+                url: apiImage
+              }
+            };
+          }
 
           // the flow 1: use Detect api get image id
           rp(faceDetectOption)
@@ -59,8 +74,12 @@ module.exports = function(RED) {
               if (response.length == 0) {
                 console.log('no detect return');
               } else {
-                // get returned face id
-                apiGetFaceId.push(response[0].faceId);
+                if (apiContentType == 'file') {
+                  var tempJson = JSON.parse(response.toString());
+                  apiGetFaceId.push(tempJson[0].faceId);
+                } else {
+                  apiGetFaceId.push(response[0].faceId);
+                }
 
                 // identify opiton
                 var faceIdentifyOption = {
@@ -81,45 +100,53 @@ module.exports = function(RED) {
 
                 // the flow 2: use image id to identify from group
                 rp(faceIdentifyOption)
-                  .then(response => {
-                    // get returned person id
-                    apiGetPersonId = response[0].candidates[0].personId;
-                    apiGetPersonConfidence = response[0].candidates[0].confidence;
-                    
-                    // flow 3: get person name by person id
-                    var personDataOptions = {
-                      uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + apiGetPersonId),
-                      method: 'GET',
-                      json: true,
-                      headers: {
-                        'Content-Type': 'application/json',
-                        'Ocp-Apim-Subscription-Key': apiSubkey
+                  .then(response => {                    
+                    if (response[0].candidates.length == 0) {
+                      // no person fit
+                      msg.IdentifyResult = {
+                        "Result": "Failed",
+                        "Reason": "No Person fits to this face"
                       }
-                    };
-
-                    rp(personDataOptions)
-                      .then(response => {
-                        console.log('get people info', response);
-
-                        //return name, info and confidence
-                        msg.IdentifyResult = {
-                          "Result": "Successed",
-                          "Name": response.name,
-                          "Info": response.userData,
-                          "Identify confidence": apiGetPersonConfidence
+                      node.send(msg);
+                    } else {
+                      // get returned person id
+                      apiGetPersonId = response[0].candidates[0].personId;
+                      apiGetPersonConfidence = response[0].candidates[0].confidence;
+                      
+                      // flow 3: get person name by person id
+                      var personDataOptions = {
+                        uri: ( 'https://' + apiServer + '/face/v1.0/persongroups/' + apiGroupId + '/persons/' + apiGetPersonId),
+                        method: 'GET',
+                        json: true,
+                        headers: {
+                          'Content-Type': 'application/json',
+                          'Ocp-Apim-Subscription-Key': apiSubkey
                         }
+                      };
 
-                        node.send(msg);
-                      })
-                      .catch(err => {
-                        msg.error = 'personData ' + err;
-                        msg.IdentifyResult = {
-                          "Result": "Failed",
-                        }
+                      rp(personDataOptions)
+                        .then(response => {
+                          console.log('get people info', response);
 
-                        node.send(msg);
-                      })
+                          //return name, info and confidence
+                          msg.IdentifyResult = {
+                            "Result": "Successed",
+                            "Name": response.name,
+                            "Info": response.userData,
+                            "Identify confidence": apiGetPersonConfidence
+                          }
 
+                          node.send(msg);
+                        })
+                        .catch(err => {
+                          msg.error = 'personData ' + err;
+                          msg.IdentifyResult = {
+                            "Result": "Failed",
+                          }
+
+                          node.send(msg);
+                        })
+                    }
                   })
                   .catch(err => {
                     msg.error = 'faceIdentify ' + err;
