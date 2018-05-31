@@ -7,7 +7,12 @@ module.exports = function(RED) {
   function FaceApiCreate(config) {
     RED.nodes.createNode(this, config);
     var brokerConn = RED.nodes.getNode(config.broker);
-    var apiInfo = brokerConn.credentials;
+    var apiInfo = {
+      subkey: brokerConn.subkey,
+      server: brokerConn.server,
+      groupid: brokerConn.groupid,
+      groupinfo: brokerConn.groupinfo
+    };
     // console.log(apiInfo);
     var node = this;
     
