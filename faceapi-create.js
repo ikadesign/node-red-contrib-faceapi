@@ -193,7 +193,7 @@ module.exports = function(RED) {
                             })
                         })
                         .catch(err => {
-                          msg.erro = ('add person face 1 FILE' + err);
+                          msg.error = ('add person face 1 FILE' + err);
                           node.send(msg);
                         })
                     } else {
@@ -239,7 +239,7 @@ module.exports = function(RED) {
                             })
                         })
                         .catch(err => {
-                          msg.erro = ('add person face 1 URL' + err);
+                          msg.error = ('add person face 1 URL' + err);
                           node.send(msg);
                         })
                     }
@@ -318,7 +318,7 @@ module.exports = function(RED) {
                                 })
                             })
                             .catch(err => {
-                              msg.erro = ('add person face 2 FILE ' + err);
+                              msg.error = ('add person face 2 FILE ' + err);
                               node.send(msg);
                             })
                         } else {
@@ -419,7 +419,7 @@ module.exports = function(RED) {
                                 })
                             })
                             .catch(err => {
-                              msg.erro = ('add person face 3 ' + err);
+                              msg.error = ('add person face 3 ' + err);
                               node.send(msg);
                             })
                         })
